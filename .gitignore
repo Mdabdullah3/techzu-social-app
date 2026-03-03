@@ -1,0 +1,41 @@
+# --- System Files ---
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Dependencies ---
+**/node_modules/
+**/bower_components/
+
+# --- Environment / Secrets ---
+**/.env
+**/.env.local
+**/.env.*.local
+**/firebase-key.json
+
+# --- Backend Specific ---
+backend/dist/
+backend/build/
+
+# --- Mobile (Expo / React Native) Specific ---
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/android/
+mobile/ios/
+
+# Mobile Build Artifacts
+mobile/*.jks
+mobile/*.p8
+mobile/*.p12
+mobile/*.key
+mobile/*.mobileprovision
+mobile/*.apk
+mobile/*.aab
+
+# --- Editor Specific ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
