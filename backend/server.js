@@ -7,7 +7,7 @@ import connectDB from './config/db.js';
 import logger from './config/logger.js';
 import swaggerSpec from './config/swagger.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
-
+import userRoutes from './routes/userRoutes.js';
 // Load environment variables 
 dotenv.config();
 // Connect to MongoDB
@@ -29,6 +29,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/', (req, res) => {
     res.send('API is running... Visit /api-docs for documentation');
 });
+app.use('/api/v1/users', userRoutes);
 
 // Global Error Handler
 app.use(errorMiddleware);
