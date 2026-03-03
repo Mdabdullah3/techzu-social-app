@@ -8,22 +8,16 @@ import { generateAccessToken, generateRefreshToken } from '../utils/generateToke
 // @desc    Register a new user
 export const registerUser = catchAsync(async (req, res, next) => {
     const { name, email, password } = req.body;
-
     const userExists = await User.findOne({ email });
     if (userExists) return next(new ErrorHandler('User already exists', 400));
+    const user = new User({ name, email, password });
 
-    // 1. Create User
-    const user = await User.create({ name, email, password });
-
-    // 2. Generate Tokens AFTER user is created
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
-
-    // 3. Save Refresh Token to DB
     user.refreshToken = refreshToken;
     await user.save();
 
-    sendResponse(res, 201, true, 'User registered', {
+    sendResponse(res, 201, true, 'User registered successfully', {
         _id: user._id,
         name: user.name,
         email: user.email,
@@ -32,21 +26,20 @@ export const registerUser = catchAsync(async (req, res, next) => {
     });
 });
 
-// @desc    Login user
 export const loginUser = catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
 
+    // Find user and include password for comparison
     const user = await User.findOne({ email });
     if (!user || !(await user.matchPassword(password))) {
         return next(new ErrorHandler('Invalid email or password', 401));
     }
 
-    const accessToken = generateAccessToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
+    const accessToken = generateAccessToken(user._id.toString());
+    const refreshToken = generateRefreshToken(user._id.toString());
 
-    // Save to DB so we can verify it later
     user.refreshToken = refreshToken;
-    await user.save();
+    await user.save(); // This now works because the pre-save hook is fixed!
 
     sendResponse(res, 200, true, 'Logged in', {
         _id: user._id,
