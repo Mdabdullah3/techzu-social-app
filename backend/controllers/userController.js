@@ -86,3 +86,17 @@ export const getMe = catchAsync(async (req, res, next) => {
     const user = await User.findById(req.user._id).select('-password');
     sendResponse(res, 200, true, 'User profile retrieved', user);
 });
+
+// @desc    Update user profile (e.g., FCM Token)
+// @route   PATCH /api/v1/users/profile
+export const updateProfile = catchAsync(async (req, res, next) => {
+    const { fcmToken, name } = req.body;
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { fcmToken, name },
+        { new: true, runValidators: true }
+    ).select('-password');
+
+    sendResponse(res, 200, true, 'Profile updated', user);
+});

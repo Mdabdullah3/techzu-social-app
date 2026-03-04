@@ -2,7 +2,8 @@ import Post from '../models/Post.js';
 import catchAsync from '../middleware/catchAsync.js';
 import ErrorHandler from '../utils/errorHandler.js';
 import sendResponse from '../utils/sendResponse.js';
-
+import { sendPushNotification } from '../services/notificationService.js';
+import User from '../models/User.js';
 // @desc    Create a post
 export const createPost = catchAsync(async (req, res, next) => {
     const post = await Post.create({
@@ -38,7 +39,20 @@ export const toggleLike = catchAsync(async (req, res, next) => {
         // Like: Add user ID to array
         post.likes.push(req.user._id);
     }
+    // Inside toggleLike after post.save()...
+    if (!isLiked) { // Only notify on Like, not Unlike
+        const postOwner = await User.findById(post.user);
 
+        // Don't notify if the user likes their own post
+        if (postOwner && postOwner.fcmToken && postOwner._id.toString() !== req.user._id.toString()) {
+            await sendPushNotification(
+                postOwner.fcmToken,
+                'New Like! ❤️',
+                `${req.user.name} liked your post: "${post.text.substring(0, 20)}..."`,
+                { postId: post._id.toString() }
+            );
+        }
+    }
     await post.save();
     sendResponse(res, 200, true, isLiked ? 'Unliked' : 'Liked', post);
 });
@@ -53,7 +67,16 @@ export const addComment = catchAsync(async (req, res, next) => {
         userName: req.user.name,
         text: req.body.text
     };
-
+    // Inside addComment after post.save()...
+    const postOwner = await User.findById(post.user);
+    if (postOwner && postOwner.fcmToken && postOwner._id.toString() !== req.user._id.toString()) {
+        await sendPushNotification(
+            postOwner.fcmToken,
+            'New Comment! 💬',
+            `${req.user.name} commented: "${req.body.text.substring(0, 20)}..."`,
+            { postId: post._id.toString() }
+        );
+    }
     post.comments.push(comment);
     await post.save();
     sendResponse(res, 201, true, 'Comment added', post);
