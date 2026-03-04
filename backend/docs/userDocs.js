@@ -101,4 +101,24 @@
  *     responses:
  *       200:
  *         description: Logged out successfully
+ * 
+ * 
+ * /users/me:
+ *   get:
+ *     summary: Get current logged-in user profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success: { type: boolean }
+ *                 data: { $ref: '#/components/schemas/User' }
+ *       401:
+ *         description: Not authorized
  */

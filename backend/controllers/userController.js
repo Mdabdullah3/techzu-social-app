@@ -78,3 +78,11 @@ export const refreshAccessToken = catchAsync(async (req, res, next) => {
         sendResponse(res, 200, true, 'Token refreshed', { accessToken: newAccessToken });
     });
 });
+
+// @desc    Get current user profile
+// @route   GET /api/v1/users/me
+// @access  Private
+export const getMe = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user._id).select('-password');
+    sendResponse(res, 200, true, 'User profile retrieved', user);
+});

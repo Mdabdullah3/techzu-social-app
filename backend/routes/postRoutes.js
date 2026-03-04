@@ -1,10 +1,9 @@
 import express from 'express';
-import { createPost, getPosts, toggleLike, addComment } from '../controllers/postController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { postSchema, commentSchema } from '../validations/postValidation.js';
+import { addComment, createPost, getPosts, toggleLike } from '../controllers/postController.js';
 
 const router = express.Router();
-
 router.route('/')
     .get(getPosts)
     .post(protect, postSchema, createPost);

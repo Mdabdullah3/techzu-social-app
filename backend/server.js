@@ -8,6 +8,7 @@ import logger from './config/logger.js';
 import swaggerSpec from './config/swagger.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 // Load environment variables 
 dotenv.config();
 // Connect to MongoDB
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
     res.send('API is running... Visit /api-docs for documentation');
 });
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/posts', postRoutes);
 
 // Global Error Handler
 app.use(errorMiddleware);
