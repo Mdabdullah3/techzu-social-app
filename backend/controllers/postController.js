@@ -18,7 +18,7 @@ export const getPosts = catchAsync(async (req, res, next) => {
     const { username } = req.query;
     let query = {};
     if (username) {
-        query.userName = new RegExp(username, 'i'); 
+        query.userName = new RegExp(username, 'i');
     }
     const posts = await Post.find(query).sort({ createdAt: -1 });
     sendResponse(res, 200, true, 'Feed retrieved', posts);
@@ -57,4 +57,41 @@ export const addComment = catchAsync(async (req, res, next) => {
     post.comments.push(comment);
     await post.save();
     sendResponse(res, 201, true, 'Comment added', post);
+});
+
+// @desc    Update a post
+// @route   PATCH /api/v1/posts/:id
+export const updatePost = catchAsync(async (req, res, next) => {
+    let post = await Post.findById(req.params.id);
+
+    if (!post) return next(new ErrorHandler('Post not found', 404));
+
+    // Security Check: Is the user the owner of the post?
+    if (post.user.toString() !== req.user._id.toString()) {
+        return next(new ErrorHandler('You are not authorized to update this post', 403));
+    }
+
+    post = await Post.findByIdAndUpdate(req.params.id, { text: req.body.text }, {
+        new: true,
+        runValidators: true
+    });
+
+    sendResponse(res, 200, true, 'Post updated successfully', post);
+});
+
+// @desc    Delete a post
+// @route   DELETE /api/v1/posts/:id
+export const deletePost = catchAsync(async (req, res, next) => {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) return next(new ErrorHandler('Post not found', 404));
+
+    // Security Check: Is the user the owner?
+    if (post.user.toString() !== req.user._id.toString()) {
+        return next(new ErrorHandler('You are not authorized to delete this post', 403));
+    }
+
+    await post.deleteOne();
+
+    sendResponse(res, 200, true, 'Post removed successfully');
 });

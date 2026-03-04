@@ -115,4 +115,32 @@
  *     responses:
  *       201:
  *         description: Comment added successfully
+ * 
+ * /posts/{id}:
+ *   patch:
+ *     summary: Update a post (Author only)
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               text: { type: string, example: "This is my updated text" }
+ *   delete:
+ *     summary: Delete a post (Author only)
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
  */

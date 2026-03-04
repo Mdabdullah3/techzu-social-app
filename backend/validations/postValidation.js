@@ -18,3 +18,8 @@ export const commentSchema = [
     body('text').notEmpty().withMessage('Comment cannot be empty').trim(),
     validate
 ];
+
+export const updatePostSchema = [
+    body('text').notEmpty().withMessage('Updated text cannot be empty').trim(),
+    validate
+];
