@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
 import { Link } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import ScreenWrapper from '../../components/ScreenWrapper';
-import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
 import { COLORS } from '../../constants/Theme';
 import { useAuthStore } from '../../store/useAuthStore';
 
@@ -24,6 +24,7 @@ export default function Register() {
             await register(name, email, password);
         } catch (error: any) {
             const errorMsg = error.response?.data?.message || 'Registration failed.';
+            console.log(error, "error");
             Alert.alert('Error', errorMsg);
         } finally {
             setLoading(false);

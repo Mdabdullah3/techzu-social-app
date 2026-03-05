@@ -1,10 +1,10 @@
+import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, Pressable } from 'react-native';
-import { useRouter, Link } from 'expo-router';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import ScreenWrapper from '../../components/ScreenWrapper';
-import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
-import { COLORS, FONTS } from '../../constants/Theme';
+import Input from '../../components/ui/Input';
+import { COLORS } from '../../constants/Theme';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export default function Login() {
@@ -22,7 +22,6 @@ export default function Login() {
         setLoading(true);
         try {
             await login(email, password);
-            // The _layout.tsx will automatically detect the 'user' change and redirect
         } catch (error: any) {
             const errorMsg = error.response?.data?.message || 'Invalid credentials. Please try again.';
             Alert.alert('Login Failed', errorMsg);
