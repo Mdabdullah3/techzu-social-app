@@ -1,40 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { COLORS, FONTS, SIZES } from '../../constants/Theme';
+import { COLORS, SIZES } from '../../constants/Theme';
 
-interface Props {
-    label?: string;
-    error?: string;
-    [key: string]: any;
-}
+export default function Input({ label, error, ...props }: any) {
+    const [isFocused, setIsFocused] = useState(false);
 
-export default function Input({ label, error, ...props }: Props) {
     return (
         <View style={styles.container}>
-            {label && <Text style={styles.label}>{label}</Text>}
-            <TextInput
-                style={[styles.input, error ? styles.inputError : null]}
-                placeholderTextColor={COLORS.textMuted}
-                {...props}
-            />
+            <View style={[
+                styles.wrapper,
+                isFocused && { borderColor: COLORS.primary }
+            ]}>
+                <TextInput
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    style={styles.input}
+                    placeholderTextColor={COLORS.textMuted}
+                    selectionColor={COLORS.primary}
+                    {...props}
+                />
+            </View>
             {error && <Text style={styles.errorText}>{error}</Text>}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { marginBottom: 16, width: SIZES.isTablet ? '50%' : '100%', alignSelf: 'center' },
-    label: { color: COLORS.textMuted, marginBottom: 6, fontSize: 14, fontWeight: '500' },
-    input: {
-        backgroundColor: COLORS.surface,
-        color: 'white',
-        paddingHorizontal: 16,
-        paddingVertical: 14,
-        borderRadius: SIZES.radius,
+    container: { marginBottom: 16, width: SIZES.isTablet ? '60%' : '100%', alignSelf: 'center' },
+    wrapper: {
+        backgroundColor: COLORS.background,
+        borderRadius: 4, // X-style sharper corners
         borderWidth: 1,
         borderColor: COLORS.border,
-        fontSize: FONTS.md
     },
-    inputError: { borderColor: COLORS.error },
-    errorText: { color: COLORS.error, fontSize: 12, marginTop: 4 },
+    input: { color: 'white', paddingHorizontal: 12, paddingVertical: 16, fontSize: 17 },
+    errorText: { color: COLORS.error, fontSize: 13, marginTop: 4, marginLeft: 4 },
 });

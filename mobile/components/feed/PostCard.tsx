@@ -1,19 +1,11 @@
-import { Edit3, Heart, MessageSquare, Send, Trash2 } from 'lucide-react-native';
+import { Edit3, Heart, MessageSquare, MoreHorizontal, Trash2 } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { COLORS } from '../../constants/Theme';
-import { Post, usePostStore } from '../../store/usePostStore';
+import { usePostStore } from '../../store/usePostStore';
 
-interface Props {
-    post: Post;
-    currentUserId: string;
-    onLike: () => void;
-}
-
-export default function PostCard({ post, currentUserId, onLike }: Props) {
+export default function PostCard({ post, currentUserId, onLike }: any) {
     const { updatePost, deletePost, addComment } = usePostStore();
-
-    // Local UI States
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(post.text);
     const [showComments, setShowComments] = useState(false);
@@ -22,103 +14,90 @@ export default function PostCard({ post, currentUserId, onLike }: Props) {
     const isOwner = post.user === currentUserId;
     const isLiked = post.likes.includes(currentUserId);
 
-    const handleUpdate = async () => {
-        await updatePost(post._id, editText);
-        setIsEditing(false);
-    };
-
-    const handleDelete = () => {
-        Alert.alert("Delete Post", "Are you sure?", [
-            { text: "Cancel" },
-            { text: "Delete", style: 'destructive', onPress: () => deletePost(post._id) }
-        ]);
-    };
-
-    const handleAddComment = async () => {
-        if (!commentText.trim()) return;
-        await addComment(post._id, commentText);
-        setCommentText('');
-    };
-
     return (
-        <View style={styles.card}>
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.avatar}><Text style={styles.avatarText}>{post.userName[0].toUpperCase()}</Text></View>
-                <Text style={styles.username}>@{post.userName}</Text>
+        <View style={styles.container}>
+            <View style={styles.leftColumn}>
+                <View style={styles.avatar}>
+                    <Text style={styles.avatarText}>{post.userName[0]}</Text>
+                </View>
+                {showComments && <View style={styles.threadLine} />}
+            </View>
 
-                {isOwner && (
-                    <View style={styles.ownerActions}>
-                        <TouchableOpacity onPress={() => setIsEditing(!isEditing)}><Edit3 size={18} color={COLORS.primary} /></TouchableOpacity>
-                        <TouchableOpacity onPress={handleDelete} style={{ marginLeft: 15 }}><Trash2 size={18} color={COLORS.error} /></TouchableOpacity>
+            <View style={styles.rightColumn}>
+                <View style={styles.header}>
+                    <Text style={styles.username}>{post.userName} <Text style={styles.handle}>@{post.userName.toLowerCase().replace(/\s/g, '')} · 1h</Text></Text>
+                    <TouchableOpacity><MoreHorizontal color="#71767B" size={18} /></TouchableOpacity>
+                </View>
+
+                {isEditing ? (
+                    <View style={styles.editBox}>
+                        <TextInput style={styles.editInput} value={editText} onChangeText={setEditText} multiline autoFocus />
+                        <View style={styles.editActions}>
+                            <TouchableOpacity onPress={() => setIsEditing(false)}><Text style={styles.cancelTxt}>Cancel</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => { updatePost(post._id, editText); setIsEditing(false); }} style={styles.saveBtn}><Text style={styles.saveBtnTxt}>Update</Text></TouchableOpacity>
+                        </View>
+                    </View>
+                ) : (
+                    <Text style={styles.content}>{post.text}</Text>
+                )}
+
+                <View style={styles.actions}>
+                    <TouchableOpacity onPress={() => setShowComments(!showComments)} style={styles.actionItem}>
+                        <MessageSquare size={18} color="#71767B" />
+                        <Text style={styles.actionNum}>{post.comments.length}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={onLike} style={styles.actionItem}>
+                        <Heart size={18} color={isLiked ? '#F91880' : '#71767B'} fill={isLiked ? '#F91880' : 'transparent'} />
+                        <Text style={[styles.actionNum, isLiked && { color: '#F91880' }]}>{post.likes.length}</Text>
+                    </TouchableOpacity>
+                    {isOwner && (
+                        <View style={{ flexDirection: 'row', gap: 20 }}>
+                            <TouchableOpacity onPress={() => setIsEditing(true)}><Edit3 size={18} color="#71767B" /></TouchableOpacity>
+                            <TouchableOpacity onPress={() => deletePost(post._id)}><Trash2 size={18} color="#F4212E" /></TouchableOpacity>
+                        </View>
+                    )}
+                </View>
+
+                {showComments && (
+                    <View style={styles.commentList}>
+                        {post.comments.map((c: any, i: number) => (
+                            <Text key={i} style={styles.comment}><Text style={styles.commentUser}>{c.userName}</Text> {c.text}</Text>
+                        ))}
+                        <View style={styles.inputRow}>
+                            <TextInput style={styles.miniInput} placeholder="Post your reply" placeholderTextColor="#71767B" value={commentText} onChangeText={setCommentText} />
+                            <TouchableOpacity onPress={() => { addComment(post._id, commentText); setCommentText(''); }}><Text style={styles.replyBtn}>Reply</Text></TouchableOpacity>
+                        </View>
                     </View>
                 )}
             </View>
-
-            {/* Content / Edit Mode */}
-            {isEditing ? (
-                <View>
-                    <TextInput style={styles.editInput} value={editText} onChangeText={setEditText} multiline />
-                    <TouchableOpacity onPress={handleUpdate} style={styles.saveBtn}><Text style={{ color: 'white' }}>Save Changes</Text></TouchableOpacity>
-                </View>
-            ) : (
-                <Text style={styles.content}>{post.text}</Text>
-            )}
-
-            {/* Actions */}
-            <View style={styles.footer}>
-                <TouchableOpacity onPress={onLike} style={styles.actionBtn}>
-                    <Heart size={20} color={isLiked ? COLORS.error : COLORS.textMuted} fill={isLiked ? COLORS.error : 'transparent'} />
-                    <Text style={[styles.actionText, isLiked && { color: COLORS.error }]}>{post.likes.length}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => setShowComments(!showComments)} style={styles.actionBtn}>
-                    <MessageSquare size={20} color={COLORS.textMuted} />
-                    <Text style={styles.actionText}>{post.comments.length}</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Comment Section */}
-            {showComments && (
-                <View style={styles.commentSection}>
-                    {post.comments.map((c, i) => (
-                        <View key={i} style={styles.commentItem}>
-                            <Text style={styles.commentUser}>{c.userName}: <Text style={styles.commentText}>{c.text}</Text></Text>
-                        </View>
-                    ))}
-                    <View style={styles.commentInputRow}>
-                        <TextInput
-                            style={styles.commentInput}
-                            placeholder="Add a comment..."
-                            placeholderTextColor={COLORS.textMuted}
-                            value={commentText}
-                            onChangeText={setCommentText}
-                        />
-                        <TouchableOpacity onPress={handleAddComment}><Send size={20} color={COLORS.primary} /></TouchableOpacity>
-                    </View>
-                </View>
-            )}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    card: { backgroundColor: COLORS.surface, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: COLORS.border },
-    header: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-    avatar: { width: 32, height: 32, borderRadius: 16, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
-    avatarText: { color: 'white', fontWeight: 'bold', fontSize: 12 },
-    username: { color: 'white', fontWeight: 'bold', flex: 1 },
-    ownerActions: { flexDirection: 'row' },
-    content: { color: 'white', fontSize: 16, lineHeight: 22, marginBottom: 12 },
-    editInput: { backgroundColor: COLORS.surfaceLight, color: 'white', padding: 10, borderRadius: 8, marginBottom: 10 },
-    saveBtn: { backgroundColor: COLORS.primary, padding: 8, borderRadius: 8, alignItems: 'center' },
-    footer: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: 12 },
-    actionBtn: { flexDirection: 'row', alignItems: 'center', marginRight: 25 },
-    actionText: { color: COLORS.textMuted, marginLeft: 6, fontWeight: '600' },
-    commentSection: { marginTop: 15, paddingLeft: 10, borderLeftWidth: 2, borderLeftColor: COLORS.border },
-    commentItem: { marginBottom: 8 },
-    commentUser: { color: COLORS.primary, fontWeight: 'bold', fontSize: 13 },
-    commentText: { color: 'white', fontWeight: 'normal' },
-    commentInputRow: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
-    commentInput: { flex: 1, color: 'white', fontSize: 14, paddingRight: 10 }
+    container: { flexDirection: 'row', padding: 16, borderBottomWidth: 0.5, borderBottomColor: '#2F3336' },
+    leftColumn: { alignItems: 'center', marginRight: 12 },
+    avatar: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' },
+    avatarText: { color: 'white', fontWeight: 'bold' },
+    threadLine: { flex: 1, width: 2, backgroundColor: '#333', marginTop: 4 },
+    rightColumn: { flex: 1 },
+    header: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
+    username: { color: 'white', fontWeight: 'bold', fontSize: 15 },
+    handle: { color: '#71767B', fontWeight: 'normal' },
+    content: { color: '#E7E9EA', fontSize: 15, lineHeight: 20, marginBottom: 12 },
+    actions: { flexDirection: 'row', justifyContent: 'space-between', maxWidth: '80%' },
+    actionItem: { flexDirection: 'row', alignItems: 'center' },
+    actionNum: { color: '#71767B', fontSize: 13, marginLeft: 8 },
+    editBox: { backgroundColor: '#16181C', padding: 10, borderRadius: 8, marginBottom: 10 },
+    editInput: { color: 'white', fontSize: 15 },
+    editActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10, gap: 15, alignItems: 'center' },
+    saveBtn: { backgroundColor: 'white', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
+    saveBtnTxt: { color: 'black', fontWeight: 'bold' },
+    cancelTxt: { color: 'white', fontSize: 13 },
+    commentList: { marginTop: 12 },
+    comment: { color: '#E7E9EA', fontSize: 14, marginBottom: 4 },
+    commentUser: { fontWeight: 'bold', color: COLORS.primary },
+    inputRow: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
+    miniInput: { flex: 1, color: 'white', fontSize: 14 },
+    replyBtn: { color: COLORS.primary, fontWeight: 'bold', marginLeft: 10 }
 });

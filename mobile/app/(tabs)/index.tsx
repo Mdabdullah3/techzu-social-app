@@ -1,3 +1,4 @@
+import { registerForPushNotificationsAsync } from '@/utils/registerForPush';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import ScreenWrapper from '../../components/ScreenWrapper';
@@ -7,15 +8,10 @@ import Input from '../../components/ui/Input';
 import { COLORS, SIZES } from '../../constants/Theme';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePostStore } from '../../store/usePostStore';
-import { registerForPushNotificationsAsync } from '../../utils/registerForPush';
 export default function FeedScreen() {
   const { posts, isLoading, fetchPosts, toggleLike, addPost } = usePostStore();
   const user = useAuthStore((state) => state.user);
-  useEffect(() => {
-    if (user) {
-      registerForPushNotificationsAsync();
-    }
-  }, [user]);
+
   const [newPostText, setNewPostText] = useState('');
   const [search, setSearch] = useState('');
   const [isPosting, setIsPosting] = useState(false);
@@ -31,10 +27,21 @@ export default function FeedScreen() {
     setNewPostText('');
     setIsPosting(false);
   };
+  useEffect(() => {
+    const setupNotifications = async () => {
+      try {
+        if (user) {
+          await registerForPushNotificationsAsync();
+        }
+      } catch (e) {
+        console.error("Critical fail in notification setup", e);
+      }
+    };
 
+    setupNotifications();
+  }, [user]);
   return (
     <ScreenWrapper scroll={false} includeTop={false}>
-      {/* 1. Header & Search */}
       <View style={styles.headerContainer}>
         <Text style={styles.greeting}>Feed</Text>
         <Input
@@ -103,7 +110,7 @@ const styles = StyleSheet.create({
   greeting: { color: 'white', fontSize: 28, fontWeight: 'bold', marginBottom: 12 },
   createPostCard: {
     padding: 16,
-    backgroundColor: COLORS.surfaceLight,
+    backgroundColor: COLORS.background,
     margin: 16,
     borderRadius: 20,
     width: SIZES.isTablet ? '60%' : '92%',

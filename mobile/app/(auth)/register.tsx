@@ -16,63 +16,69 @@ export default function Register() {
 
     const handleRegister = async () => {
         if (!name || !email || !password) {
-            return Alert.alert('Error', 'All fields are required');
+            return Alert.alert('Action Required', 'Please provide your full details to initialize your account.');
         }
 
         setLoading(true);
         try {
             await register(name, email, password);
         } catch (error: any) {
-            const errorMsg = error.response?.data?.message || 'Registration failed.';
-            console.log(error, "error");
-            Alert.alert('Error', errorMsg);
+            const errorMsg = error.response?.data?.message || 'Registration sequence failed.';
+            Alert.alert('System Alert', errorMsg);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper includeTop={true} scroll={true}>
             <View style={styles.container}>
+                {/* Minimal Logo */}
+                <Text style={styles.logo}>𝕏</Text>
+
                 <View style={styles.header}>
-                    <Text style={styles.title}>Join Techzu</Text>
-                    <Text style={styles.subtitle}>Create an account to start posting</Text>
+                    <Text style={styles.title}>Create your account</Text>
+                    <Text style={styles.subtitle}>Join a global network of high-performance developers.</Text>
                 </View>
 
                 <View style={styles.form}>
                     <Input
-                        label="Full Name"
-                        placeholder="John Doe"
+                        placeholder="Full Name"
                         value={name}
                         onChangeText={setName}
+                        autoCorrect={false}
                     />
                     <Input
-                        label="Email"
-                        placeholder="john@example.com"
+                        placeholder="Email Address"
                         value={email}
                         onChangeText={setEmail}
                         autoCapitalize="none"
                         keyboardType="email-address"
                     />
                     <Input
-                        label="Password"
-                        placeholder="Min. 6 characters"
+                        placeholder="Password (min. 6 characters)"
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
                     />
 
+                    <View style={styles.termsBox}>
+                        <Text style={styles.termsText}>
+                            By signing up, you agree to our <Text style={styles.linkText}>Terms</Text>, <Text style={styles.linkText}>Privacy Policy</Text>, and <Text style={styles.linkText}>Cookie Use</Text>.
+                        </Text>
+                    </View>
+
                     <Button
-                        title="Create Account"
+                        title="CREATE ACCOUNT"
                         onPress={handleRegister}
                         loading={loading}
                     />
 
                     <View style={styles.footer}>
-                        <Text style={styles.footerText}>Already have an account? </Text>
-                        <Link href="../login" asChild>
+                        <Text style={styles.footerText}>Already part of the network? </Text>
+                        <Link href="/login" asChild>
                             <Pressable>
-                                <Text style={styles.link}>Login</Text>
+                                <Text style={styles.link}>Sign in</Text>
                             </Pressable>
                         </Link>
                     </View>
@@ -83,12 +89,16 @@ export default function Register() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, paddingTop: 40 },
-    header: { marginBottom: 40 },
-    title: { fontSize: 32, fontWeight: 'bold', color: COLORS.text, marginBottom: 8 },
-    subtitle: { fontSize: 16, color: COLORS.textMuted },
+    container: { flex: 1, paddingHorizontal: 30, paddingTop: 20 },
+    logo: { fontSize: 32, color: 'white', fontWeight: '900', alignSelf: 'center', marginBottom: 40 },
+    header: { marginBottom: 32 },
+    title: { fontSize: 34, fontWeight: '900', color: 'white', letterSpacing: -1, marginBottom: 12 },
+    subtitle: { fontSize: 16, color: COLORS.textMuted, lineHeight: 22 },
     form: { flex: 1 },
-    footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
+    termsBox: { marginVertical: 20 },
+    termsText: { color: COLORS.textMuted, fontSize: 13, lineHeight: 18 },
+    linkText: { color: COLORS.primary },
+    footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 32, paddingBottom: 40 },
     footerText: { color: COLORS.textMuted, fontSize: 14 },
-    link: { color: COLORS.primary, fontWeight: 'bold', fontSize: 14 }
+    link: { color: COLORS.primary, fontWeight: '800', fontSize: 14 }
 });

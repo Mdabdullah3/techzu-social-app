@@ -1,56 +1,60 @@
+import Constants from "expo-constants";
+import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import apiClient from "../services/api";
 
-// Tell the app how to handle notifications when it is open
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
-
 export async function registerForPushNotificationsAsync() {
-  let token;
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#6366f1",
-    });
-  }
-
-  // 1. Ask for permission
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-
-  if (existingStatus !== "granted") {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-
-  if (finalStatus !== "granted") {
-    console.log("Failed to get push token for push notification!");
-    return;
-  }
-
-  // 2. Get the specific FCM (Device) Token
   try {
+    // 1. SILENT GUARD: If Expo Go, stop immediately.
+    // This prevents the SDK 55 crash you are seeing.
+    if (Constants.appOwnership === "expo") {
+      console.log("Environment: Expo Go. Skipping notification registration.");
+      return null;
+    }
+
+    // 2. DEVICE GUARD: Notifications don't work on Emulators.
+    if (!Device.isDevice) {
+      console.log("Environment: Emulator. Skipping notification registration.");
+      return null;
+    }
+
+    // 3. ANDROID CHANNEL SETUP
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#6366f1",
+      });
+    }
+
+    // 4. PERMISSIONS
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") return null;
+
+    // 5. GET TOKEN
     const tokenData = await Notifications.getDevicePushTokenAsync();
-    token = tokenData.data;
-    console.log("FCM Token:", token);
+    const token = tokenData.data;
 
-    // 3. Send it to your Backend
-    await apiClient.patch("/users/profile", { fcmToken: token });
-    console.log("Token saved to database!");
+    // 6. SEND TO BACKEND
+    if (token) {
+      await apiClient.patch("/users/profile", { fcmToken: token });
+      console.log("FCM Token synced to server.");
+    }
+
+    return token;
   } catch (error) {
-    console.log("Error getting push token", error);
+    // 7. CATCH ALL: Never let this function crash the UI
+    console.warn("Notification Registration Error: ", error);
+    return null;
   }
-
-  return token;
 }

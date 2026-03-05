@@ -1,36 +1,15 @@
+// constants/Colors.ts
 export const PALETTE = {
-  indigo: {
-    500: "#6366f1",
-    950: "#1e1b4b",
-  },
-  zinc: {
-    800: "#262626",
-    900: "#121212",
-    950: "#000000",
-  },
-  slate: {
-    400: "#94a3b8",
-  },
-  red: "#ef4444",
-  green: "#22c55e",
+  primary: "#00BAFF", // Electric Sky Blue
+  black: "#000000", // Pure OLED Black
+  darkGrey: "#16181C", // Surface
+  border: "#2F3336", // Thin Border (X-style)
   white: "#FFFFFF",
-  black: "#000000",
-  blue: "#2f95dc",
+  muted: "#71767B", // X-style muted text
+  error: "#F4212E", // Alert Red
 };
 
 export default {
-  light: {
-    text: PALETTE.black,
-    background: PALETTE.white,
-    tint: PALETTE.indigo[500],
-    tabIconDefault: "#ccc",
-    tabIconSelected: PALETTE.indigo[500],
-  },
-  dark: {
-    text: PALETTE.white,
-    background: PALETTE.black,
-    tint: PALETTE.white,
-    tabIconDefault: "#ccc",
-    tabIconSelected: PALETTE.white,
-  },
+  light: { text: "#000", background: "#fff", tint: PALETTE.primary },
+  dark: { text: "#fff", background: "#000", tint: "#fff" },
 };

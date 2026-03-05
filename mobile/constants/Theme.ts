@@ -2,33 +2,28 @@
 import { Dimensions } from "react-native";
 import { PALETTE } from "./Colors";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
-// Design Tokens
 export const COLORS = {
-  primary: PALETTE.indigo[500],
+  primary: PALETTE.primary,
   background: PALETTE.black,
-  surface: PALETTE.zinc[900],
-  surfaceLight: PALETTE.zinc[800],
+  surface: PALETTE.darkGrey,
+  border: PALETTE.border,
   text: PALETTE.white,
-  textMuted: PALETTE.slate[400],
-  error: PALETTE.red,
-  success: PALETTE.green,
-  border: PALETTE.zinc[800],
+  textMuted: PALETTE.muted,
+  error: PALETTE.error,
 };
 
 export const SIZES = {
-  radius: 12,
-  padding: 16,
-  windowWidth: width,
-  windowHeight: height,
+  radius: 12, // Sharp, modern corners
+  padding: 20,
   isTablet: width > 600,
 };
 
 export const FONTS = {
-  sm: 12,
+  sm: 13,
   md: 16,
-  lg: 20,
-  xl: 24,
-  bold: "700",
+  lg: 22,
+  xl: 34,
+  bold: "800" as any,
 };

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "myApp",
-    "slug": "myApp",
+    "name": "techzu-social-app",
+    "slug": "techzu-social-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "techzu-social-app",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash-icon.png",

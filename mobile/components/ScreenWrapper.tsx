@@ -15,7 +15,6 @@ export default function ScreenWrapper({ children, scroll = true, includeTop = fa
     const Container = scroll ? ScrollView : View;
 
     return (
-        // edges={['left', 'right', 'bottom']} prevents double padding at the top
         <SafeAreaView
             style={styles.safe}
             edges={includeTop ? ['top', 'left', 'right', 'bottom'] : ['left', 'right', 'bottom']}
