@@ -3,11 +3,11 @@ import React from 'react';
 import {
     KeyboardAvoidingView,
     Platform,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     View
 } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from '../constants/Theme';
 
 interface Props {
@@ -40,6 +40,6 @@ export default function ScreenWrapper({ children, scroll = true }: Props) {
 const styles = StyleSheet.create({
     safe: { flex: 1, backgroundColor: COLORS.background },
     flex: { flex: 1 },
-    container: { flex: 1 },
+    container: { flex: 1, paddingHorizontal: 20 },
     scrollContent: { paddingBottom: 40 },
 });

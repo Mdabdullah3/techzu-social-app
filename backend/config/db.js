@@ -8,7 +8,7 @@ const connectDB = async () => {
     } catch (error) {
         logger.error(`Database Connection Error: ${error.message}`);
         // Try to reconnect every 5 seconds
-        setTimeout(connectDB, 5000);
+        // setTimeout(connectDB, 5000);
     }
 };
 
