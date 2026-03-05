@@ -1,8 +1,11 @@
 import React from 'react'
+import { Text, View } from 'react-native'
 
 function notifications() {
     return (
-        <div>notifications</div>
+        <View>
+            <Text>Notifications Screen</Text>
+        </View>
     )
 }
 
