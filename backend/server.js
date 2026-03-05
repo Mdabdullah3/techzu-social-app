@@ -11,13 +11,11 @@ import swaggerSpec from './config/swagger.js';
 import errorMiddleware from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js';
-import initializeFirebase from './config/firebase.js';
+import './config/firebase.js';
 // Load environment variables 
 dotenv.config();
 // Connect to MongoDB
 connectDB();
-// Initialize Firebase Admin SDK
-initializeFirebase();
 
 const app = express();
 
