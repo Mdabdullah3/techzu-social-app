@@ -1,14 +1,14 @@
+import { useColorScheme } from '@/components/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from '@/components/useColorScheme';
 import { useAuthStore } from '../store/useAuthStore';
 
 export {
-  ErrorBoundary,
+  ErrorBoundary
 } from 'expo-router';
 
 export const unstable_settings = {
@@ -17,22 +17,32 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
+// app/_layout.tsx
+
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const { isLoading, initAuth } = useAuthStore(); // Get auth loading state
+  const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  // 1. Initialize Auth immediately
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+    initAuth();
+  }, []);
 
   useEffect(() => {
-    if (loaded) {
+    if (fontError) throw fontError;
+  }, [fontError]);
+
+  useEffect(() => {
+    // 2. ONLY hide splash screen when BOTH fonts and Auth are ready
+    if (fontsLoaded && !isLoading) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontsLoaded, isLoading]);
 
-  if (!loaded) {
+  // 3. If either is still loading, return null (Splash screen stays visible)
+  if (!fontsLoaded || isLoading) {
     return null;
   }
 
@@ -41,18 +51,15 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { user, isLoading, initAuth } = useAuthStore();
+  const { user, isLoading } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
 
-  // 1. Check for stored token when the app starts
-  useEffect(() => {
-    initAuth();
-  }, []);
-
   useEffect(() => {
     if (isLoading) return;
+
     const inAuthGroup = segments[0] === ('(auth)' as string);
+
     if (!user && !inAuthGroup) {
       router.replace('/(auth)/login' as any);
     } else if (user && inAuthGroup) {
@@ -60,11 +67,14 @@ function RootLayoutNav() {
     }
   }, [user, isLoading, segments]);
 
+  // 4. Important: While auth is redirecting, show nothing to prevent flicker
+  if (isLoading) return null;
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>

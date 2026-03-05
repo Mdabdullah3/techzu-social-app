@@ -7,11 +7,15 @@ import Input from '../../components/ui/Input';
 import { COLORS, SIZES } from '../../constants/Theme';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePostStore } from '../../store/usePostStore';
-
+import { registerForPushNotificationsAsync } from '../../utils/registerForPush';
 export default function FeedScreen() {
   const { posts, isLoading, fetchPosts, toggleLike, addPost } = usePostStore();
   const user = useAuthStore((state) => state.user);
-
+  useEffect(() => {
+    if (user) {
+      registerForPushNotificationsAsync();
+    }
+  }, [user]);
   const [newPostText, setNewPostText] = useState('');
   const [search, setSearch] = useState('');
   const [isPosting, setIsPosting] = useState(false);
@@ -29,7 +33,7 @@ export default function FeedScreen() {
   };
 
   return (
-    <ScreenWrapper scroll={false}>
+    <ScreenWrapper scroll={false} includeTop={false}>
       {/* 1. Header & Search */}
       <View style={styles.headerContainer}>
         <Text style={styles.greeting}>Feed</Text>

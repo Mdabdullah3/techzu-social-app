@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1011440414321",
+    "project_id": "techzu-social-app",
+    "storage_bucket": "techzu-social-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011440414321:android:3e4d8b3613a7ea110d35d0",
+        "android_client_info": {
+          "package_name": "com.abdullah.techzusocial"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbyrhy1ZuA4DFFww3SmbpH4K9yH8ndDLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
