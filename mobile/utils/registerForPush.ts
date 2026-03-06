@@ -3,6 +3,15 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import apiClient from "../services/api";
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    // shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 export async function registerForPushNotificationsAsync() {
   try {
