@@ -6,11 +6,11 @@ const { width } = Dimensions.get("window");
 
 export const COLORS = {
   primary: PALETTE.primary,
-  background: PALETTE.black,
-  surface: PALETTE.darkGrey,
+  background: PALETTE.background,
+  surface: PALETTE.surface,
   border: PALETTE.border,
-  text: PALETTE.white,
-  textMuted: PALETTE.muted,
+  text: PALETTE.text,
+  textMuted: PALETTE.textMuted,
   error: PALETTE.error,
 };
 

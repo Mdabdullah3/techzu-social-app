@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "techzu-social-app",
+    "name": "Techzu Social",
     "slug": "techzu-social-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "techzu-social-app",
@@ -47,7 +47,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "8d29c257-4727-4202-a52b-38e9f3157e1c"
+        "projectId": "c168ddea-da5a-46de-8ccc-8cf731ca06a9"
       }
     }
   }

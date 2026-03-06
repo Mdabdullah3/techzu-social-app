@@ -1,122 +1,245 @@
-import { registerForPushNotificationsAsync } from '@/utils/registerForPush';
+import ActionSheet from '@/components/common/ActionSheet';
+import { Edit3, MessageSquareText, Search, Send, Share2, Trash2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Keyboard, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import PostCard from '../../components/feed/PostCard';
-import Button from '../../components/ui/Button';
-import Input from '../../components/ui/Input';
-import { COLORS, SIZES } from '../../constants/Theme';
+import { COLORS } from '../../constants/Theme';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePostStore } from '../../store/usePostStore';
+
 export default function FeedScreen() {
-  const { posts, isLoading, fetchPosts, toggleLike, addPost } = usePostStore();
+  const { posts, isLoading, fetchPosts, toggleLike, deletePost, addComment, updatePost } = usePostStore();
   const user = useAuthStore((state) => state.user);
 
-  const [newPostText, setNewPostText] = useState('');
+  const [sheetVisible, setSheetVisible] = useState(false);
+  const [sheetType, setSheetType] = useState<'options' | 'comments' | 'edit'>('options');
+  const [activePost, setActivePost] = useState<any>(null);
+
+  const [commentText, setCommentText] = useState('');
+  const [editText, setEditText] = useState('');
   const [search, setSearch] = useState('');
-  const [isPosting, setIsPosting] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  useEffect(() => { fetchPosts(); }, []);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const handleCreatePost = async () => {
-    if (!newPostText.trim()) return;
-    setIsPosting(true);
-    await addPost(newPostText);
-    setNewPostText('');
-    setIsPosting(false);
+  const openSheet = (post: any, type: 'options' | 'comments' | 'edit') => {
+    setActivePost(post);
+    setSheetType(type);
+    if (type === 'edit') setEditText(post.text);
+    setSheetVisible(true);
   };
-  useEffect(() => {
-    const setupNotifications = async () => {
-      try {
-        if (user) {
-          await registerForPushNotificationsAsync();
-        }
-      } catch (e) {
-        console.error("Critical fail in notification setup", e);
-      }
-    };
 
-    setupNotifications();
-  }, [user]);
+  const handleSearch = (val: string) => {
+    setSearch(val);
+    fetchPosts(val);
+  };
+
+  const handleUpdatePost = async () => {
+    if (!editText.trim()) return;
+    await updatePost(activePost._id, editText);
+    setSheetVisible(false);
+    Keyboard.dismiss();
+  };
+
+  const handleAddComment = async () => {
+    if (!commentText.trim()) return;
+    await addComment(activePost._id, commentText);
+    setCommentText('');
+    const updated = usePostStore.getState().posts.find(p => p._id === activePost._id);
+    setActivePost(updated);
+  };
+
   return (
     <ScreenWrapper scroll={false} includeTop={false}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.greeting}>Feed</Text>
-        <Input
-          placeholder="Filter by username..."
-          value={search}
-          onChangeText={(val: string) => {
-            setSearch(val);
-            fetchPosts(val);
-          }}
-        />
+      <View style={styles.searchContainer}>
+        <View style={[
+          styles.searchBar,
+          isSearchFocused && styles.searchBarFocused
+        ]}>
+          <Search
+            color={isSearchFocused ? COLORS.primary : "#555"}
+            size={18}
+            strokeWidth={2.5}
+          />
+          <TextInput
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
+            style={styles.searchInput}
+            placeholder="Search network frequencies..."
+            placeholderTextColor="#444"
+            value={search}
+            onChangeText={handleSearch}
+            selectionColor={COLORS.primary}
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => handleSearch('')}>
+              <View style={styles.clearBtn}>
+                <Text style={styles.clearText}>×</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
-      {/* 2. Create Post Section */}
-      <View style={styles.createPostCard}>
-        <Input
-          placeholder="What's happening?"
-          value={newPostText}
-          onChangeText={setNewPostText}
-          multiline
-        />
-        <Button
-          title="Post"
-          onPress={handleCreatePost}
-          loading={isPosting}
-          style={styles.postBtn}
-        />
-      </View>
-
-      {/* 3. The Feed */}
-      {isLoading && posts.length === 0 ? (
-        <ActivityIndicator color={COLORS.primary} style={{ marginTop: 40 }} />
-      ) : (
+      <View style={{ marginBottom: 160 }}>
         <FlatList
           data={posts}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <PostCard
               post={item}
-              onLike={() => {
-                if (user?._id) {
-                  toggleLike(item._id, user._id);
-                }
-              }}
               currentUserId={user?._id ?? ''}
+              onLike={() => toggleLike(item._id, user?._id || '')}
+              onOpenComments={() => openSheet(item, 'comments')}
+              onOpenOptions={() => openSheet(item, 'options')}
             />
           )}
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={isLoading}
-              onRefresh={() => fetchPosts(search)}
-              tintColor={COLORS.primary}
-            />
-          }
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No posts found. Start the conversation!</Text>
-          }
+          refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => fetchPosts(search)} tintColor={COLORS.primary} />}
         />
-      )}
+      </View>
+
+      <ActionSheet
+        isVisible={sheetVisible}
+        onClose={() => setSheetVisible(false)}
+        title={sheetType === 'edit' ? "Edit Broadcast" : sheetType === 'options' ? "Management" : "Conversation"}
+        height={sheetType === 'options' ? 0.45 : 0.95}
+      >
+        {sheetType === 'options' && (
+          <View>
+            {user?._id === activePost?.user ? (
+              <>
+                <TouchableOpacity style={styles.sheetBtn} onPress={() => setSheetType('edit')}>
+                  <Edit3 color="white" size={20} />
+                  <Text style={styles.sheetBtnText}>Edit Content</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.sheetBtn} onPress={() => { deletePost(activePost._id); setSheetVisible(false); }}>
+                  <Trash2 color="#FF3B30" size={20} />
+                  <Text style={{ color: '#FF3B30', fontSize: 16, marginLeft: 15, fontWeight: '600' }}>Delete Permanently</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <TouchableOpacity style={styles.sheetBtn}><Share2 color="white" size={20} /><Text style={styles.sheetBtnText}>Share Broadcast</Text></TouchableOpacity>
+            )}
+          </View>
+        )}
+
+        {sheetType === 'edit' && (
+          <View style={{ flex: 1 }}>
+            <TextInput
+              style={styles.editInput}
+              value={editText}
+              onChangeText={setEditText}
+              multiline
+              autoFocus
+              placeholderTextColor="#444"
+            />
+            <TouchableOpacity style={styles.saveBtn} onPress={handleUpdatePost}>
+              <Text style={styles.saveBtnText}>Save Changes</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {sheetType === 'comments' && (
+          <View style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+              {activePost?.comments.length === 0 ? (
+                <View style={styles.emptyComments}>
+                  <MessageSquareText color="#222" size={60} style={{ marginBottom: 10 }} />
+                  <Text style={styles.emptyTitle}>Silent frequency</Text>
+                  <Text style={styles.emptySub}>Be the first to broadcast a reply.</Text>
+                </View>
+              ) : (
+                activePost?.comments.map((c: any, i: number) => (
+                  <View key={i} style={styles.commentCard}>
+                    <Text style={styles.cUser}>@{c.userName.toLowerCase()}</Text>
+                    <Text style={styles.cText}>{c.text}</Text>
+                  </View>
+                ))
+              )}
+            </ScrollView>
+
+            <View style={styles.inputArea}>
+              <TextInput
+                style={styles.replyInput}
+                placeholder="Write your reply..."
+                placeholderTextColor="#555"
+                value={commentText}
+                onChangeText={setCommentText}
+                multiline
+              />
+              <TouchableOpacity onPress={handleAddComment} style={styles.sendIcon}>
+                <Send color="white" size={18} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </ActionSheet>
     </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  headerContainer: { paddingHorizontal: 16, paddingTop: 20 },
-  greeting: { color: 'white', fontSize: 28, fontWeight: 'bold', marginBottom: 12 },
-  createPostCard: {
-    padding: 16,
-    backgroundColor: COLORS.background,
-    margin: 16,
-    borderRadius: 20,
-    width: SIZES.isTablet ? '60%' : '92%',
-    alignSelf: 'center'
+  searchContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+    backgroundColor: '#050505',
   },
-  postBtn: { height: 45, marginTop: -10 },
-  listContent: { padding: 16, paddingBottom: 120 },
-  emptyText: { color: COLORS.textMuted, textAlign: 'center', marginTop: 40 },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0D0D0E',
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    height: 54,
+    borderWidth: 1,
+    borderColor: '#1A1A1C',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  searchBarFocused: {
+    borderColor: COLORS.primary,
+    backgroundColor: '#0F0F12',
+    shadowColor: COLORS.primary,
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+  },
+  searchInput: {
+    flex: 1,
+    color: 'white',
+    marginLeft: 12,
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  clearBtn: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#222',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  clearText: {
+    color: '#666',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: -2,
+  },
+  sheetBtn: { flexDirection: 'row', alignItems: 'center', paddingVertical: 20, borderBottomWidth: 0.5, borderBottomColor: '#1A1A1A' },
+  sheetBtnText: { color: 'white', fontSize: 16, marginLeft: 15, fontWeight: '500' },
+  editInput: { color: 'white', fontSize: 18, lineHeight: 26, textAlignVertical: 'top', minHeight: 150, backgroundColor: '#0F0F0F', padding: 15, borderRadius: 15 },
+  saveBtn: { backgroundColor: 'white', height: 50, borderRadius: 15, justifyContent: 'center', alignItems: 'center', marginTop: 20 },
+  saveBtnText: { color: 'black', fontWeight: '900', fontSize: 15, textTransform: 'uppercase' },
+  commentCard: { marginBottom: 15, borderBottomWidth: 0.5, borderBottomColor: '#111', paddingBottom: 15 },
+  cUser: { color: COLORS.primary, fontWeight: 'bold', fontSize: 13, marginBottom: 4 },
+  cText: { color: '#E7E9EA', fontSize: 15, lineHeight: 20 },
+  emptyComments: { alignItems: 'center', marginTop: 80 },
+  emptyTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+  emptySub: { color: '#444', fontSize: 14, marginTop: 5 },
+  inputArea: { flexDirection: 'row', alignItems: 'center', marginTop: 10, paddingBottom: 40 },
+  replyInput: { flex: 1, backgroundColor: '#0F0F0F', color: 'white', borderRadius: 15, paddingHorizontal: 15, minHeight: 50, paddingVertical: 12 },
+  sendIcon: { marginLeft: 15, backgroundColor: COLORS.primary, width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' }
 });

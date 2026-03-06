@@ -34,7 +34,7 @@ export default function Register() {
         <ScreenWrapper includeTop={true} scroll={true}>
             <View style={styles.container}>
                 {/* Minimal Logo */}
-                <Text style={styles.logo}>𝕏</Text>
+                <Text style={styles.logo}>TECHZU.</Text>
 
                 <View style={styles.header}>
                     <Text style={styles.title}>Create your account</Text>
@@ -90,13 +90,13 @@ export default function Register() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, paddingHorizontal: 30, paddingTop: 20 },
-    logo: { fontSize: 32, color: 'white', fontWeight: '900', alignSelf: 'center', marginBottom: 40 },
+    logo: { fontSize: 20, color: 'white', fontWeight: '900', alignSelf: 'center', marginBottom: 40 },
     header: { marginBottom: 32 },
     title: { fontSize: 34, fontWeight: '900', color: 'white', letterSpacing: -1, marginBottom: 12 },
     subtitle: { fontSize: 16, color: COLORS.textMuted, lineHeight: 22 },
     form: { flex: 1 },
     termsBox: { marginVertical: 20 },
-    termsText: { color: COLORS.textMuted, fontSize: 13, lineHeight: 18 },
+    termsText: { color: COLORS.text, fontSize: 13, lineHeight: 18 },
     linkText: { color: COLORS.primary },
     footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 32, paddingBottom: 40 },
     footerText: { color: COLORS.textMuted, fontSize: 14 },

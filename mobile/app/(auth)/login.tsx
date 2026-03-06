@@ -28,7 +28,7 @@ export default function Login() {
     return (
         <ScreenWrapper scroll={true} includeTop={true}>
             <View style={styles.container}>
-                <Text style={styles.logo}>𝕏</Text>
+                <Text style={styles.logo}>TECHZU.</Text>
 
                 <Text style={styles.title}>Happening now</Text>
                 <Text style={styles.subtitle}>Join Techzu Social today.</Text>
@@ -63,17 +63,11 @@ export default function Login() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, paddingHorizontal: 30, paddingTop: 40 },
-    logo: { fontSize: 36, color: 'white', fontWeight: 'bold', marginBottom: 50, alignSelf: 'center' },
+    logo: { fontSize: 20, color: 'white', fontWeight: 'bold', marginBottom: 50, alignSelf: 'center' },
     title: { fontSize: 40, fontWeight: '900', color: 'white', letterSpacing: -1, marginBottom: 10 },
     subtitle: { fontSize: 20, fontWeight: '700', color: 'white', marginBottom: 40 },
     form: { width: '100%' },
-    secondaryBtn: {
-        backgroundColor: 'transparent',
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        marginTop: 12
-    },
-    footer: { marginTop: 40 },
+    footer: { marginTop: 40, display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
     footerText: { color: COLORS.textMuted, fontSize: 15 },
-    link: { color: COLORS.primary, fontSize: 15, marginTop: 5 },
+    link: { color: COLORS.primary, fontSize: 15 },
 });

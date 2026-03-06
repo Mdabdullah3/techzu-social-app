@@ -7,15 +7,17 @@ export default function Input({ label, error, ...props }: any) {
 
     return (
         <View style={styles.container}>
+            {label && <Text style={[styles.label, isFocused && { color: COLORS.primary }]}>{label}</Text>}
             <View style={[
                 styles.wrapper,
-                isFocused && { borderColor: COLORS.primary }
+                isFocused && styles.wrapperFocused,
+                error && { borderColor: COLORS.error }
             ]}>
                 <TextInput
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     style={styles.input}
-                    placeholderTextColor={COLORS.textMuted}
+                    placeholderTextColor="#444"
                     selectionColor={COLORS.primary}
                     {...props}
                 />
@@ -26,13 +28,24 @@ export default function Input({ label, error, ...props }: any) {
 }
 
 const styles = StyleSheet.create({
-    container: { marginBottom: 16, width: SIZES.isTablet ? '60%' : '100%', alignSelf: 'center' },
+    container: { marginBottom: 20, width: SIZES.isTablet ? '60%' : '100%', alignSelf: 'center' },
+    label: { color: '#555', fontSize: 13, fontWeight: '700', marginBottom: 8, letterSpacing: 0.5, textTransform: 'uppercase' },
     wrapper: {
-        backgroundColor: COLORS.background,
-        borderRadius: 4, // X-style sharper corners
+        backgroundColor: '#0A0A0A', // Contrast against background
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: COLORS.border,
+        borderColor: '#1A1A1A',
     },
-    input: { color: 'white', paddingHorizontal: 12, paddingVertical: 16, fontSize: 17 },
-    errorText: { color: COLORS.error, fontSize: 13, marginTop: 4, marginLeft: 4 },
+    wrapperFocused: {
+        borderColor: COLORS.primary,
+        backgroundColor: '#0D0D12', // Subtle violet tint
+    },
+    input: {
+        color: 'white',
+        paddingHorizontal: 16,
+        paddingVertical: 15,
+        fontSize: 16,
+        fontWeight: '500'
+    },
+    errorText: { color: COLORS.error, fontSize: 12, marginTop: 6, marginLeft: 4 },
 });

@@ -1,4 +1,4 @@
-import { Settings } from 'lucide-react-native';
+import { Bell, Settings } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,31 +8,25 @@ import { useAuthStore } from '../../store/useAuthStore';
 export default function TopHeader() {
     const user = useAuthStore((state) => state.user);
     const insets = useSafeAreaInsets();
-
     return (
-        <View style={[styles.wrapper, { paddingTop: insets.top }]}>
-            <View style={styles.container}>
-                <TouchableOpacity activeOpacity={0.7} style={styles.avatarWrapper}>
-                    <View style={styles.avatar}>
-                        <Text style={styles.avatarText}>{user?.name?.[0].toUpperCase()}</Text>
-                    </View>
+        <View style={[styles.container, { paddingTop: insets.top }]}>
+            <View style={styles.content}>
+                <TouchableOpacity style={styles.profileCircle}>
+                    <Text style={styles.avatarText}>{user?.name?.[0]}</Text>
                 </TouchableOpacity>
 
-                <Text style={styles.logo}>𝕏</Text>
-
-                <TouchableOpacity activeOpacity={0.7} style={styles.settingsBtn}>
-                    <Settings color="white" size={20} strokeWidth={2.5} />
-                </TouchableOpacity>
-            </View>
-
-            {/* Sub-Header Tabs (X-Style) */}
-            <View style={styles.tabs}>
-                <View style={styles.tab}>
-                    <Text style={styles.activeTabText}>For you</Text>
-                    <View style={styles.activeIndicator} />
+                <View style={styles.logoContainer}>
+                    <Text style={styles.logo}>TECHZU</Text>
+                    <View style={styles.dot} />
                 </View>
-                <View style={styles.tab}>
-                    <Text style={styles.inactiveTabText}>Following</Text>
+
+                <View style={styles.rightIcons}>
+                    <TouchableOpacity style={styles.iconBtn}>
+                        <Bell color="white" size={20} strokeWidth={2} />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.iconBtn}>
+                        <Settings color="white" size={20} strokeWidth={2} />
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
@@ -40,16 +34,13 @@ export default function TopHeader() {
 }
 
 const styles = StyleSheet.create({
-    wrapper: { backgroundColor: 'rgba(0,0,0,0.9)', borderBottomWidth: 0.5, borderBottomColor: '#2F3336' },
-    container: { height: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16 },
-    avatarWrapper: { width: 34, height: 34 },
-    avatar: { width: 34, height: 34, borderRadius: 17, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center' },
-    avatarText: { color: 'white', fontWeight: '900', fontSize: 14 },
-    logo: { color: 'white', fontSize: 24, fontWeight: '900' },
-    settingsBtn: { padding: 4 },
-    tabs: { flexDirection: 'row', height: 48 },
-    tab: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    activeTabText: { color: 'white', fontWeight: 'bold', fontSize: 15 },
-    inactiveTabText: { color: '#71767B', fontWeight: 'bold', fontSize: 15 },
-    activeIndicator: { position: 'absolute', bottom: 0, width: 56, height: 4, backgroundColor: COLORS.primary, borderRadius: 2 }
+    container: { backgroundColor: COLORS.background, borderBottomWidth: 1, borderBottomColor: '#1A1A1A' },
+    content: { height: 60, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 },
+    profileCircle: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#222', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#333' },
+    avatarText: { color: COLORS.primary, fontWeight: 'bold', fontSize: 14 },
+    logoContainer: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: 40 },
+    logo: { color: 'white', fontSize: 18, fontWeight: '900', letterSpacing: 4 },
+    dot: { width: 4, height: 4, borderRadius: 2, backgroundColor: COLORS.primary, marginLeft: 2 },
+    rightIcons: { flexDirection: 'row', gap: 15 },
+    iconBtn: { padding: 4 }
 });
