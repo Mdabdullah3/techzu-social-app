@@ -17,7 +17,6 @@ interface PostState {
   fetchPosts: (username?: string) => Promise<void>;
   toggleLike: (postId: string, userId: string) => Promise<void>;
   addPost: (text: string) => Promise<void>;
-  // NEW ACTIONS
   updatePost: (postId: string, text: string) => Promise<void>;
   deletePost: (postId: string) => Promise<void>;
   addComment: (postId: string, text: string) => Promise<void>;
@@ -26,7 +25,7 @@ interface PostState {
 export const usePostStore = create<PostState>((set, get) => ({
   posts: [],
   isLoading: false,
-
+  // Fetch posts with username filter
   fetchPosts: async (username) => {
     set({ isLoading: true });
     try {
@@ -38,11 +37,13 @@ export const usePostStore = create<PostState>((set, get) => ({
     }
   },
 
+  // Create a new post
   addPost: async (text) => {
     const res = await apiClient.post("/posts", { text });
     set((state) => ({ posts: [res.data.data, ...state.posts] }));
   },
 
+  // Update post text
   updatePost: async (postId, text) => {
     const res = await apiClient.patch(`/posts/${postId}`, { text });
     const updated = res.data.data;
@@ -51,6 +52,7 @@ export const usePostStore = create<PostState>((set, get) => ({
     }));
   },
 
+  // Delete a post
   deletePost: async (postId) => {
     await apiClient.delete(`/posts/${postId}`);
     set((state) => ({
@@ -58,6 +60,7 @@ export const usePostStore = create<PostState>((set, get) => ({
     }));
   },
 
+  // Add a comment to a post
   addComment: async (postId, text) => {
     const res = await apiClient.post(`/posts/${postId}/comment`, { text });
     const updatedPost = res.data.data;
@@ -66,6 +69,7 @@ export const usePostStore = create<PostState>((set, get) => ({
     }));
   },
 
+  // Toggle like with optimistic update
   toggleLike: async (postId, userId) => {
     const previousPosts = get().posts;
     const updatedPosts = previousPosts.map((post) => {

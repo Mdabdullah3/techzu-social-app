@@ -8,17 +8,17 @@ import { COLORS } from '../../constants/Theme';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export default function Register() {
+    // Local state for form inputs and loading state
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const register = useAuthStore((state) => state.register);
-
+    // Handle register with basic validation and error handling
     const handleRegister = async () => {
         if (!name || !email || !password) {
             return Alert.alert('Action Required', 'Please provide your full details to initialize your account.');
         }
-
         setLoading(true);
         try {
             await register(name, email, password);
@@ -33,14 +33,11 @@ export default function Register() {
     return (
         <ScreenWrapper includeTop={true} scroll={true}>
             <View style={styles.container}>
-                {/* Minimal Logo */}
                 <Text style={styles.logo}>TECHZU.</Text>
-
                 <View style={styles.header}>
                     <Text style={styles.title}>Create your account</Text>
                     <Text style={styles.subtitle}>Join a global network of high-performance developers.</Text>
                 </View>
-
                 <View style={styles.form}>
                     <Input
                         placeholder="Full Name"
@@ -61,13 +58,11 @@ export default function Register() {
                         onChangeText={setPassword}
                         secureTextEntry
                     />
-
                     <View style={styles.termsBox}>
                         <Text style={styles.termsText}>
                             By signing up, you agree to our <Text style={styles.linkText}>Terms</Text>, <Text style={styles.linkText}>Privacy Policy</Text>, and <Text style={styles.linkText}>Cookie Use</Text>.
                         </Text>
                     </View>
-
                     <Button
                         title="CREATE ACCOUNT"
                         onPress={handleRegister}

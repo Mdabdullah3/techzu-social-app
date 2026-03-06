@@ -1,15 +1,13 @@
-// backend/services/notificationService.js
-import admin from 'firebase-admin'; // This will be the initialized one
+import admin from 'firebase-admin'; 
 import logger from '../config/logger.js';
 
 export const sendPushNotification = async (targetToken, title, body, data = {}) => {
     if (!targetToken) return;
-
     const message = {
         token: targetToken,
         notification: { title, body },
         android: {
-            priority: 'high', // CRITICAL: This wakes up the phone
+            priority: 'high',
             notification: {
                 channelId: 'default',
                 sound: 'default',

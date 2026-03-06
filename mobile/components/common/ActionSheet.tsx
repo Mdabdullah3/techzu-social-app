@@ -16,7 +16,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function ActionSheet({ isVisible, onClose, title, children, height = 0.5 }: any) {
     const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-
+    // 
     useEffect(() => {
         if (isVisible) {
             Animated.spring(slideAnim, {

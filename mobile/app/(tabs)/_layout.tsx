@@ -1,7 +1,7 @@
 import TopHeader from '@/components/common/TopHeader';
 import { COLORS } from '@/constants/Theme';
 import { Tabs } from 'expo-router';
-import { Home, Mail, Plus, Search } from 'lucide-react-native';
+import { Home, Mail, Plus } from 'lucide-react-native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -19,7 +19,6 @@ export default function TabLayout() {
           position: 'absolute',
           elevation: 0,
         },
-        // Global header
         header: () => <TopHeader />,
       }}>
 
@@ -29,13 +28,11 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Home size={24} color={color} strokeWidth={2.5} />
         }}
       />
-
-      {/* --- ELITE CREATE POST CONFIG --- */}
       <Tabs.Screen
         name="create-post"
         options={{
-          headerShown: false,      // 1. THIS HIDES YOUR TOPBAR
-          tabBarStyle: { display: 'none' }, // 2. THIS HIDES THE BOTTOM TABS (Focus Mode)
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
           tabBarIcon: ({ color }) => (
             <View style={styles.postBtn}>
               <Plus size={24} color="white" strokeWidth={3} />
@@ -43,7 +40,6 @@ export default function TabLayout() {
           )
         }}
       />
-
       <Tabs.Screen
         name="messages"
         options={{

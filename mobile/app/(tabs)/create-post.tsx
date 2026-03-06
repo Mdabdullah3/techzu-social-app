@@ -15,11 +15,13 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { usePostStore } from '../../store/usePostStore';
 
 export default function CreatePostScreen() {
+
+    // Local state for post content
     const [text, setText] = useState('');
     const user = useAuthStore(state => state.user);
     const addPost = usePostStore(state => state.addPost);
     const router = useRouter();
-
+    // Handle post submission with haptic feedback and navigation
     const handlePost = async () => {
         if (!text.trim()) return;
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -31,14 +33,12 @@ export default function CreatePostScreen() {
     return (
         <ScreenWrapper includeTop={true} scroll={false}>
             <View style={styles.container} >
-                {/* 1. Header: Balanced 3-Column Layout */}
+                {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()} hitSlop={20}>
                         <X color="white" size={24} strokeWidth={2} />
                     </TouchableOpacity>
-
                     <Text style={styles.headerTitle}>Create Post</Text>
-
                     <TouchableOpacity
                         onPress={handlePost}
                         disabled={!text.trim()}
@@ -49,8 +49,7 @@ export default function CreatePostScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-
-                {/* 2. User Identity Row */}
+                {/* User Data  */}
                 <View style={styles.userRow}>
                     <View style={styles.avatar}>
                         <Text style={styles.avatarText}>{user?.name?.[0].toUpperCase()}</Text>
@@ -63,8 +62,7 @@ export default function CreatePostScreen() {
                         <Text style={styles.userStatus}>Public</Text>
                     </View>
                 </View>
-
-                {/* 3. The Input Canvas */}
+                {/* Input Field */}
                 <View style={styles.inputArea}>
                     <TextInput
                         style={styles.input}

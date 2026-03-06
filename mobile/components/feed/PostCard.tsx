@@ -48,12 +48,10 @@ export default function PostCard({ post, currentUserId, onLike, onOpenComments, 
                 </View>
             </View>
 
-            {/* Content Body */}
             <View style={styles.contentBox}>
                 <Text style={styles.contentText}>{post.text}</Text>
             </View>
 
-            {/* Interaction Bento Bar */}
             <View style={styles.footer}>
                 <TouchableOpacity onPress={onLike} activeOpacity={0.7} style={[styles.pill, isLiked && styles.likedPill]}>
                     <Heart

@@ -8,11 +8,12 @@ import { COLORS } from '../../constants/Theme';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export default function Login() {
+    // Local state for form inputs and loading state
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const login = useAuthStore((state) => state.login);
-
+    // Handle login with basic validation and error handling
     const handleLogin = async () => {
         if (!email || !password) return Alert.alert('Error', 'Please fill in all fields.');
         setLoading(true);
@@ -29,10 +30,8 @@ export default function Login() {
         <ScreenWrapper scroll={true} includeTop={true}>
             <View style={styles.container}>
                 <Text style={styles.logo}>TECHZU.</Text>
-
                 <Text style={styles.title}>Happening now</Text>
                 <Text style={styles.subtitle}>Join Techzu Social today.</Text>
-
                 <View style={styles.form}>
                     <Input
                         placeholder="Phone, email, or username"
@@ -46,9 +45,7 @@ export default function Login() {
                         onChangeText={setPassword}
                         secureTextEntry
                     />
-
                     <Button title="LOGIN NOW" onPress={handleLogin} loading={loading} />
-
                     <View style={styles.footer}>
                         <Text style={styles.footerText}>Don't have an account? </Text>
                         <Link href="/register" asChild>

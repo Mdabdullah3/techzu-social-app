@@ -8,12 +8,11 @@ import { COLORS } from '../constants/Theme';
 interface Props {
     children: React.ReactNode;
     scroll?: boolean;
-    includeTop?: boolean; // New prop to control top padding
+    includeTop?: boolean;
 }
 
 export default function ScreenWrapper({ children, scroll = true, includeTop = false }: Props) {
     const Container = scroll ? ScrollView : View;
-
     return (
         <SafeAreaView
             style={styles.safe}

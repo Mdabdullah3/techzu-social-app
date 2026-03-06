@@ -17,6 +17,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  // Load fonts and initialize auth state
   const { isLoading, initAuth } = useAuthStore();
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -29,6 +30,7 @@ export default function RootLayout() {
     if (fontError) throw fontError;
   }, [fontError]);
 
+  // Hide splash screen once fonts are loaded and auth state is initialized
   useEffect(() => {
     if (fontsLoaded && !isLoading) {
       SplashScreen.hideAsync();
@@ -47,11 +49,10 @@ function RootLayoutNav() {
   const segments = useSegments();
   const router = useRouter();
 
+  // Redirect logic based on auth state and current route
   useEffect(() => {
     if (isLoading) return;
-
     const inAuthGroup = segments[0] === ('(auth)' as string);
-
     if (!user && !inAuthGroup) {
       router.replace('/(auth)/login' as any);
     } else if (user && inAuthGroup) {

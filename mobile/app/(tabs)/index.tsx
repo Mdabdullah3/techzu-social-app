@@ -1,4 +1,5 @@
 import ActionSheet from '@/components/common/ActionSheet';
+import { registerForPushNotificationsAsync } from '@/utils/registerForPush';
 import { Edit3, MessageSquareText, Search, Send, Share2, Trash2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Keyboard, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -9,6 +10,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { usePostStore } from '../../store/usePostStore';
 
 export default function FeedScreen() {
+  // Zustand Stores ( Post Management & Auth )
   const { posts, isLoading, fetchPosts, toggleLike, deletePost, addComment, updatePost } = usePostStore();
   const user = useAuthStore((state) => state.user);
 
@@ -21,7 +23,10 @@ export default function FeedScreen() {
   const [search, setSearch] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   useEffect(() => { fetchPosts(); }, []);
+  // Register for push notifications when user logs in
+  useEffect(() => { if (user) registerForPushNotificationsAsync(); }, [user]);
 
+  // Open Action Sheet with specific type (options, comments, edit)
   const openSheet = (post: any, type: 'options' | 'comments' | 'edit') => {
     setActivePost(post);
     setSheetType(type);
@@ -29,11 +34,13 @@ export default function FeedScreen() {
     setSheetVisible(true);
   };
 
+  // Handle search input changes and fetch posts based on search <query></query>
   const handleSearch = (val: string) => {
     setSearch(val);
     fetchPosts(val);
   };
 
+  // Handle post update logic when saving edited content
   const handleUpdatePost = async () => {
     if (!editText.trim()) return;
     await updatePost(activePost._id, editText);
@@ -41,6 +48,7 @@ export default function FeedScreen() {
     Keyboard.dismiss();
   };
 
+  // Handle adding a new comment to the active post
   const handleAddComment = async () => {
     if (!commentText.trim()) return;
     await addComment(activePost._id, commentText);
@@ -52,6 +60,7 @@ export default function FeedScreen() {
   return (
     <ScreenWrapper scroll={false} includeTop={false}>
       <View style={styles.searchContainer}>
+        {/* Search Bar & Clear Button */}
         <View style={[
           styles.searchBar,
           isSearchFocused && styles.searchBarFocused
@@ -65,7 +74,7 @@ export default function FeedScreen() {
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
             style={styles.searchInput}
-            placeholder="Search network frequencies..."
+            placeholder="Search username..."
             placeholderTextColor="#444"
             value={search}
             onChangeText={handleSearch}
@@ -80,7 +89,7 @@ export default function FeedScreen() {
           )}
         </View>
       </View>
-
+      {/* Posts List with Pull-to-Refresh */}
       <View style={{ marginBottom: 160 }}>
         <FlatList
           data={posts}
@@ -97,11 +106,11 @@ export default function FeedScreen() {
           refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => fetchPosts(search)} tintColor={COLORS.primary} />}
         />
       </View>
-
+      {/* Action Sheet for Post Options, Comments, and Editing */}
       <ActionSheet
         isVisible={sheetVisible}
         onClose={() => setSheetVisible(false)}
-        title={sheetType === 'edit' ? "Edit Broadcast" : sheetType === 'options' ? "Management" : "Conversation"}
+        title={sheetType === 'edit' ? "Edit Posts" : sheetType === 'options' ? "Management" : "Comments"}
         height={sheetType === 'options' ? 0.45 : 0.95}
       >
         {sheetType === 'options' && (
@@ -118,11 +127,11 @@ export default function FeedScreen() {
                 </TouchableOpacity>
               </>
             ) : (
-              <TouchableOpacity style={styles.sheetBtn}><Share2 color="white" size={20} /><Text style={styles.sheetBtnText}>Share Broadcast</Text></TouchableOpacity>
+              <TouchableOpacity style={styles.sheetBtn}><Share2 color="white" size={20} /><Text style={styles.sheetBtnText}>Share </Text></TouchableOpacity>
             )}
           </View>
         )}
-
+        {/* Edit Post Sheet  */}
         {sheetType === 'edit' && (
           <View style={{ flex: 1 }}>
             <TextInput
@@ -138,15 +147,15 @@ export default function FeedScreen() {
             </TouchableOpacity>
           </View>
         )}
-
+        {/* Comments Sheet */}
         {sheetType === 'comments' && (
           <View style={{ flex: 1 }}>
             <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
               {activePost?.comments.length === 0 ? (
                 <View style={styles.emptyComments}>
                   <MessageSquareText color="#222" size={60} style={{ marginBottom: 10 }} />
-                  <Text style={styles.emptyTitle}>Silent frequency</Text>
-                  <Text style={styles.emptySub}>Be the first to broadcast a reply.</Text>
+                  <Text style={styles.emptyTitle}>No Comments</Text>
+                  <Text style={styles.emptySub}> Be the first person to comment .</Text>
                 </View>
               ) : (
                 activePost?.comments.map((c: any, i: number) => (
@@ -157,11 +166,11 @@ export default function FeedScreen() {
                 ))
               )}
             </ScrollView>
-
+            {/* Input Area for Adding New Comment */}
             <View style={styles.inputArea}>
               <TextInput
                 style={styles.replyInput}
-                placeholder="Write your reply..."
+                placeholder="Write your comment..."
                 placeholderTextColor="#555"
                 value={commentText}
                 onChangeText={setCommentText}
