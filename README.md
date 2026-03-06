@@ -4,7 +4,7 @@ A full-stack, high-performance social media application built with the **MERN** 
 
 ## 🚀 Live Deliverables
 
-- **Android APK (Download):** [INSERT_YOUR_GOOGLE_DRIVE_LINK_HERE]
+- **Android APK (Download):** [[Download App]](https://drive.google.com/file/d/1iPoqbdeCD9ZMIzL7V4yMnHGI_wdCd_4J/view?usp=sharing)
 - **Live Backend API:** [[Live Backend Url](https://techzu-social-app.onrender.com/)]/api/v1
 - **API Documentation:** [[Api Docs](https://techzu-social-app.onrender.com/)]/api-docs
 - **GitHub Repository:** [[Github Repo](https://github.com/Mdabdullah3/techzu-social-app)]
