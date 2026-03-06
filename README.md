@@ -92,16 +92,23 @@ The backend is hosted on Render's Free Tier.
 
 ## 📝 Setup & Installation
 
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Mdabdullah3/techzu-social-app.git
+cd techzu-social-app
+
 **Backend**
 
-1. `cd backend` 2.`npm install`
-2. Create a `.env ` file with `MONGODB_URI, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, and FIREBASE_CONFIG.`
+1. `cd backend`
+2.`npm install`
+3. Create a `.env ` file in the backend folder. You can copy the values from `.env.local` configuration or use the template below:
 3. `npm run dev`
 
 **Mobile**
 
-1. `cd mobile` 2.`npm install --legacy-peer-deps`
-2. `npx expo start`
+1. `cd mobile`
+2.`npm install --legacy-peer-deps`
+3. `npx expo start`
 
 
 ### Built with ❤️ for the Techzu Ichicode Technical Assessment.
